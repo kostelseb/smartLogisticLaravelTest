@@ -16,6 +16,12 @@ class ConsumeNotificationTopicCommand extends Command
 
     public function handle(NotificationDeliveryService $deliveryService): int
     {
+        if (! extension_loaded('rdkafka')) {
+            $this->error('The rdkafka PHP extension is not installed. Run this command inside Docker, or use notifications:drain-local for local OSPanel checks.');
+
+            return self::FAILURE;
+        }
+
         $priority = NotificationPriority::from($this->argument('priority'));
         $topic = $priority->topic();
 
