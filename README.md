@@ -88,7 +88,7 @@ curl -X POST http://localhost:8080/api/notification-batches \
 Готовая коллекция лежит в репозитории:
 
 ```text
-postman/Notification Service.postman_collection.json
+postman/NotificationServiceRealTests.postman_collection.json
 ```
 
 Импорт в Postman: `Import -> Files`. В коллекции есть переменная `baseUrl` со значением `http://localhost:8080`.
@@ -98,21 +98,6 @@ postman/Notification Service.postman_collection.json
 ```bash
 php artisan test
 ```
-
-Если локальный `php` не в PATH:
-
-```bash
-C:\OSPanel\modules\PHP-8.3\php.exe vendor\phpunit\phpunit\phpunit
-```
-
-Покрытые сценарии:
-
-- приоритет transactional перед marketing;
-- permanent failure переводит уведомление в `dropped`;
-- idempotency-key защищает от дублей;
-- temporary failure ретраится и затем становится `delivered`;
-- API истории подписчика возвращает статусы;
-- integration suite проверяет чтение seeded batch и полный lifecycle.
 
 ## Полезные команды
 

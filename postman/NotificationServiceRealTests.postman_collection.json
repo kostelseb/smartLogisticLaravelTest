@@ -1,0 +1,240 @@
+{
+  "info": {
+    "_postman_id": "c0f318e6-abae-4b18-84bb-895f9d6a02f6",
+    "name": "NotificationServiceRealTests",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "17445763"
+  },
+  "item": [
+    {
+      "name": "postSuccessSMS",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          },
+          {
+            "key": "Idempotency-Key",
+            "value": "postman-success-006",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"channel\": \"email\",\r\n  \"priority\": \"marketing\",\r\n  \"message\": \"Маркетинговая рассылка\",\r\n  \"subscriber_ids\": [10]\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:8080/api/notification-batches",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "api",
+            "notification-batches"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "postSuccessEmailMany",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          },
+          {
+            "key": "Idempotency-Key",
+            "value": "postman-success-002",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"channel\": \"email\",\r\n  \"priority\": \"marketing\",\r\n  \"message\": \"Маркетинговая рассылка\",\r\n  \"subscriber_ids\": [2, 3, 4, 5, 6, 7, 8, 9]\r\n}"
+        },
+        "url": {
+          "raw": "http://localhost:8080/api/notification-batches",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "api",
+            "notification-batches"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "postFailNoHeader",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          },
+          {
+            "key": "Idempotency-Key",
+            "value": "111",
+            "type": "text",
+            "disabled": true
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"channel\": \"sms\",\r\n  \"priority\": \"transactional\",\r\n  \"message\": \"Без ключа идемпотентности\",\r\n  \"recipient_ids\": [1]\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:8080/api/notification-batches",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "api",
+            "notification-batches"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "postFailNoUser",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          },
+          {
+            "key": "Idempotency-Key",
+            "value": "postman-fail-1",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"channel\": \"sms\",\r\n  \"priority\": \"transactional\",\r\n  \"message\": \"Получателя нет\",\r\n  \"subscriber_ids\": [999, 1000]\r\n}"
+        },
+        "url": {
+          "raw": "http://localhost:8080/api/notification-batches",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "api",
+            "notification-batches"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "getBatchById",
+      "protocolProfileBehavior": {
+        "disableBodyPruning": true
+      },
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          },
+          {
+            "key": "Idempotency-Key",
+            "value": "postman-success-002",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"channel\": \"email\",\r\n  \"priority\": \"marketing\",\r\n  \"message\": \"Маркетинговая рассылка\",\r\n  \"recipient_ids\": [2, 3, 4, 5, 6, 7, 8, 9]\r\n}"
+        },
+        "url": {
+          "raw": "http://localhost:8080/api/notification-batches/019eb82a-1605-7392-ba67-7287397244fa",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "api",
+            "notification-batches",
+            "019eb82a-1605-7392-ba67-7287397244fa"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "getNotificationsByUserId",
+      "protocolProfileBehavior": {
+        "disableBodyPruning": true
+      },
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          },
+          {
+            "key": "Idempotency-Key",
+            "value": "postman-success-002",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"channel\": \"email\",\r\n  \"priority\": \"marketing\",\r\n  \"message\": \"Маркетинговая рассылка\",\r\n  \"recipient_ids\": [2, 3, 4, 5, 6, 7, 8, 9]\r\n}"
+        },
+        "url": {
+          "raw": "http://localhost:8080/api/subscribers/1/notifications",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "api",
+            "subscribers",
+            "1",
+            "notifications"
+          ]
+        }
+      },
+      "response": []
+    }
+  ]
+}
