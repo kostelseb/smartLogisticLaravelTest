@@ -20,7 +20,7 @@ class NotificationBatchController extends Controller
         $idempotencyKey = $request->header('Idempotency-Key');
         if (! is_string($idempotencyKey) || trim($idempotencyKey) === '') {
             throw ValidationException::withMessages([
-                'Idempotency-Key' => ['Idempotency-Key header is required.'],
+                'Idempotency-Key' => ['Idempotency-Key header is required'],
             ]);
         }
 
@@ -28,8 +28,8 @@ class NotificationBatchController extends Controller
             'channel' => ['required', Rule::enum(NotificationChannel::class)],
             'priority' => ['required', Rule::enum(NotificationPriority::class)],
             'message' => ['required', 'string', 'max:1000'],
-            'recipient_ids' => ['required', 'array', 'min:1'],
-            'recipient_ids.*' => ['integer', 'distinct'],
+            'subscriber_ids' => ['required', 'array', 'min:1'],
+            'subscriber_ids.*' => ['integer', 'distinct'],
         ]);
 
         $batch = $service->create(new CreateNotificationBatchData(
@@ -37,18 +37,20 @@ class NotificationBatchController extends Controller
             channel: NotificationChannel::from($validated['channel']),
             priority: NotificationPriority::from($validated['priority']),
             message: $validated['message'],
-            recipientIds: array_map('intval', $validated['recipient_ids']),
+            subscriberIds: $validated['subscriber_ids'],
         ));
 
-        return response()->json($this->presentBatch($batch), 201);
+        return response()->json($this->formatBatch($batch), 201);
     }
 
-    public function show(NotificationBatch $notificationBatch): JsonResponse
+    public function show(NotificationBatch $batch): JsonResponse
     {
-        return response()->json($this->presentBatch($notificationBatch->load('notifications.subscriber')));
+        return response()->json(
+            $this->formatBatch($batch->load('notifications.subscriber'))
+        );
     }
 
-    private function presentBatch(NotificationBatch $batch): array
+    private function formatBatch(NotificationBatch $batch): array
     {
         return [
             'id' => $batch->id,

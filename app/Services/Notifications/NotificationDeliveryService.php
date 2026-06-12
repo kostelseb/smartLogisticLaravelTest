@@ -31,7 +31,7 @@ class NotificationDeliveryService
             }
 
             $providerName = $notification->channel === NotificationChannel::SMS ? 'fake-sms' : 'fake-email';
-            $result = $this->sendToProvider($notification);
+            $result = $this->attemptDelivery($notification);
             $attempt = $notification->attempts()->count() + 1;
 
             $notification->attempts()->create([
@@ -64,7 +64,7 @@ class NotificationDeliveryService
         });
     }
 
-    private function sendToProvider(Notification $notification): ProviderResult
+    private function attemptDelivery(Notification $notification): ProviderResult
     {
         return match ($notification->channel) {
             NotificationChannel::SMS => $this->smsProvider->send($notification),

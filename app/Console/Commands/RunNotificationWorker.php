@@ -8,7 +8,7 @@ use Illuminate\Console\Command;
 use Junges\Kafka\Contracts\ConsumerMessage;
 use Junges\Kafka\Facades\Kafka;
 
-class ConsumeNotificationTopicCommand extends Command
+class RunNotificationWorker extends Command
 {
     protected $signature = 'notifications:consume {priority : transactional or marketing} {--max-time=0}';
 
@@ -23,13 +23,12 @@ class ConsumeNotificationTopicCommand extends Command
         }
 
         $priority = NotificationPriority::from($this->argument('priority'));
-        $topic = $priority->topic();
+        $topic = $priority->getTopic();
 
-        // Для критичных сообщений запускается отдельный consumer: он читает свой topic независимо от marketing.
         Kafka::consumer([$topic], config('kafka.consumer_group_id'))
-            ->withHandler(function (ConsumerMessage $message) use ($deliveryService): void {
-                $body = $message->getBody();
-                $deliveryService->deliver($body['notification_id']);
+            ->withHandler(function (ConsumerMessage $kafkaMessage) use ($deliveryService): void {
+                $payload = $kafkaMessage->getBody();
+                $deliveryService->deliver($payload['notification_id']);
             })
             ->withMaxTime((int) $this->option('max-time'))
             ->build()

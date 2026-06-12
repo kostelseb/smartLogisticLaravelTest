@@ -22,16 +22,16 @@ readonly class NotificationBatchService
             return $existing->load('notifications');
         }
 
-        $existingRecipients = Subscriber::query()
-            ->whereIn('id', $data->recipientIds)
+        $existingSubscribers = Subscriber::query()
+            ->whereIn('id', $data->subscriberIds)
             ->pluck('id')
             ->map(fn (int $id): int => $id)
             ->all();
 
-        $missingRecipients = array_values(array_diff($data->recipientIds, $existingRecipients));
-        if ($missingRecipients !== []) {
+        $missingSubscribers = array_values(array_diff($data->subscriberIds, $existingSubscribers));
+        if ($missingSubscribers !== []) {
             throw ValidationException::withMessages([
-                'recipient_ids' => ['Unknown subscribers: '.implode(', ', $missingRecipients)],
+                'subscriber_ids' => ['Unknown subscribers: '.implode(', ', $missingSubscribers)],
             ]);
         }
 
@@ -41,22 +41,21 @@ readonly class NotificationBatchService
                 'channel' => $data->channel,
                 'priority' => $data->priority,
                 'message' => $data->message,
-                'queued_count' => count($data->recipientIds),
+                'queued_count' => count($data->subscriberIds),
             ]);
 
-            foreach ($data->recipientIds as $recipientId) {
+            foreach ($data->subscriberIds as $subscriberId) {
                 $notification = Notification::query()->create([
                     'batch_id' => $batch->id,
-                    'subscriber_id' => $recipientId,
+                    'subscriber_id' => $subscriberId,
                     'channel' => $data->channel,
                     'priority' => $data->priority,
                     'status' => NotificationStatus::QUEUED,
-                    'deduplication_key' => "{$batch->id}:{$recipientId}",
+                    'deduplication_key' => "{$batch->id}:{$subscriberId}",
                 ]);
 
-                // Publish only after commit so the Kafka consumer can see the notification row in DB.
                 DB::afterCommit(function () use ($data, $batch, $notification): void {
-                    $this->publisher->publish($data->priority->topic(), $notification->id, [
+                    $this->publisher->publish($data->priority->getTopic(), $notification->id, [
                         'notification_id' => $notification->id,
                         'batch_id' => $batch->id,
                         'priority' => $data->priority->value,

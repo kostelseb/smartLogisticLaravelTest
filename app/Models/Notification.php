@@ -26,14 +26,17 @@ class Notification extends Model
         'dropped_at',
     ];
 
-    protected $casts = [
-        'channel' => NotificationChannel::class,
-        'priority' => NotificationPriority::class,
-        'status' => NotificationStatus::class,
-        'sent_at' => 'datetime',
-        'delivered_at' => 'datetime',
-        'dropped_at' => 'datetime',
-    ];
+    protected function casts(): array
+    {
+        return [
+            'channel' => NotificationChannel::class,
+            'priority' => NotificationPriority::class,
+            'status' => NotificationStatus::class,
+            'dispatched_at' => 'datetime',
+            'delivered_at' => 'datetime',
+            'failed_at' => 'datetime',
+        ];
+    }
 
     public function batch(): BelongsTo
     {

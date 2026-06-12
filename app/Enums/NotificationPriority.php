@@ -7,7 +7,7 @@ enum NotificationPriority: string
     case TRANSACTIONAL = 'transactional';
     case MARKETING = 'marketing';
 
-    public function topic(): string
+    public function getTopic(): string
     {
         return match ($this) {
             self::TRANSACTIONAL => config('notifications.kafka.topics.transactional'),

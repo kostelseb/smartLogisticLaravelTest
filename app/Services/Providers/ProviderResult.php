@@ -11,17 +11,17 @@ final readonly class ProviderResult
     ) {
     }
 
-    public static function delivered(): self
+    public static function success(): self
     {
         return new self(true, false);
     }
 
-    public static function permanentFailure(string $error): self
+    public static function permanentError(string $error): self
     {
         return new self(false, false, $error);
     }
 
-    public static function temporaryFailure(string $error): self
+    public static function temporaryError(string $error): self
     {
         return new self(false, true, $error);
     }

@@ -31,13 +31,23 @@ return Application::configure(basePath: dirname(__DIR__))
             ], 422);
         });
 
-        $exceptions->render(function (ModelNotFoundException|NotFoundHttpException $exception, Request $request) {
+        $exceptions->render(function (ModelNotFoundException $exception, Request $request) {
             if (! $request->is('api/*')) {
                 return null;
             }
 
             return response()->json([
                 'message' => 'Resource not found.',
+            ], 404);
+        });
+
+        $exceptions->render(function (NotFoundHttpException $exception, Request $request) {
+            if (! $request->is('api/*')) {
+                return null;
+            }
+
+            return response()->json([
+                'message' => 'Not found.',
             ], 404);
         });
 
@@ -51,7 +61,7 @@ return Application::configure(basePath: dirname(__DIR__))
                 : 500;
 
             return response()->json([
-                'message' => $status === 500 ? 'Server error.' : $exception->getMessage(),
+                'message' => $status === 500 ? 'Internal server error.' : $exception->getMessage(),
             ], $status);
         });
     })->create();

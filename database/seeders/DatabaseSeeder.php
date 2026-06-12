@@ -10,17 +10,17 @@ use App\Models\Notification;
 use App\Models\NotificationAttempt;
 use App\Models\NotificationBatch;
 use App\Models\Subscriber;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
 {
-    use WithoutModelEvents;
-
-    /**
-     * Seed the application's database.
-     */
     public function run(): void
+    {
+        $this->seedSubscribers();
+        $this->seedDemoBatch();
+    }
+
+    private function seedSubscribers(): void
     {
         for ($i = 1; $i <= 10; $i++) {
             Subscriber::query()->updateOrCreate(
@@ -28,7 +28,7 @@ class DatabaseSeeder extends Seeder
                 [
                     'name' => "Subscriber {$i}",
                     'email' => "subscriber{$i}@example.test",
-                    'phone' => '+790000000'.str_pad((string) $i, 2, '0', STR_PAD_LEFT),
+                    'phone' => '+790000000' . str_pad((string) $i, 2, '0', STR_PAD_LEFT),
                     'provider_failure_mode' => match ($i) {
                         4 => ProviderFailureMode::PERMANENT,
                         5 => ProviderFailureMode::TEMPORARY_ONCE,
@@ -37,21 +37,28 @@ class DatabaseSeeder extends Seeder
                 ]
             );
         }
+    }
 
-        $batch = NotificationBatch::query()->find('019eb82a-1605-7392-ba67-7287397244fa') ?? new NotificationBatch();
+    private function seedDemoBatch(): void
+    {
+        $batch = NotificationBatch::query()->find('019eb82a-1605-7392-ba67-7287397244fa')
+            ?? new NotificationBatch();
+
         $batch->forceFill([
             'id' => '019eb82a-1605-7392-ba67-7287397244fa',
-            'idempotency_key' => 'seeded-demo-batch',
+            'idempotency_key' => 'seeded-transactional-batch',
             'channel' => NotificationChannel::SMS,
             'priority' => NotificationPriority::TRANSACTIONAL,
-            'message' => 'Seeded demo notification for Postman',
-            'queued_count' => 0,
-            'sent_count' => 0,
+            'message' => 'Seeded transactional notification',
+            'queued_count' => 1,
+            'sent_count' => 1,
             'delivered_count' => 1,
             'dropped_count' => 0,
         ])->save();
 
-        $notification = Notification::query()->find('019eb82a-1605-7392-ba67-7287397244fb') ?? new Notification();
+        $notification = Notification::query()->find('019eb82a-1605-7392-ba67-7287397244fb')
+            ?? new Notification();
+
         $notification->forceFill([
             'id' => '019eb82a-1605-7392-ba67-7287397244fb',
             'batch_id' => $batch->id,

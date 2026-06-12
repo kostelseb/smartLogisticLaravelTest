@@ -8,14 +8,15 @@ use App\Enums\NotificationPriority;
 final readonly class CreateNotificationBatchData
 {
     /**
-     * @param array<int, int> $recipientIds
+     * @param array<int, int> $subscriberIds
      */
     public function __construct(
         public string $idempotencyKey,
         public NotificationChannel $channel,
         public NotificationPriority $priority,
         public string $message,
-        public array $recipientIds,
+        public array $subscriberIds
+        ,
     ) {
     }
 }

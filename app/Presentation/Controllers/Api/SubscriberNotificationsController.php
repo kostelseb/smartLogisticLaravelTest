@@ -6,7 +6,7 @@ use App\Models\Subscriber;
 use App\Presentation\Controllers\Controller;
 use Illuminate\Http\JsonResponse;
 
-class SubscriberNotificationController extends Controller
+class SubscriberNotificationsController extends Controller
 {
     public function index(Subscriber $subscriber): JsonResponse
     {

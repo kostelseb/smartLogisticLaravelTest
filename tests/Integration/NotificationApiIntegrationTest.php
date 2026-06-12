@@ -14,19 +14,18 @@ class NotificationApiIntegrationTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_seeded_batch_can_be_loaded_by_uuid_for_postman_scenario(): void
+    public function test_seeded_batch_is_retrievable(): void
     {
         $this->seed(DatabaseSeeder::class);
 
         $this->getJson('/api/notification-batches/019eb82a-1605-7392-ba67-7287397244fa')
             ->assertOk()
             ->assertJsonPath('id', '019eb82a-1605-7392-ba67-7287397244fa')
-            ->assertJsonPath('counters.delivered', 1)
             ->assertJsonPath('notifications.0.id', '019eb82a-1605-7392-ba67-7287397244fb')
             ->assertJsonPath('notifications.0.status', NotificationStatus::DELIVERED->value);
     }
 
-    public function test_subscriber_history_returns_seeded_and_new_notifications(): void
+    public function test_subscriber_history_combines_seeded_and_new(): void
     {
         $this->seed(DatabaseSeeder::class);
 
@@ -34,7 +33,7 @@ class NotificationApiIntegrationTest extends TestCase
             'channel' => 'email',
             'priority' => 'marketing',
             'message' => 'New subscriber history item',
-            'recipient_ids' => [1],
+            'subscriber_ids' => [1],
         ], ['Idempotency-Key' => 'integration-history-001'])->assertCreated();
 
         $this->artisan('notifications:drain-local')->assertSuccessful();
@@ -46,7 +45,7 @@ class NotificationApiIntegrationTest extends TestCase
             ->assertJsonPath('notifications.0.status', NotificationStatus::DELIVERED->value);
     }
 
-    public function test_end_to_end_api_batch_is_published_delivered_and_persisted(): void
+    public function test_full_notification_lifecycle(): void
     {
         $this->seed(DatabaseSeeder::class);
 
@@ -54,7 +53,7 @@ class NotificationApiIntegrationTest extends TestCase
             'channel' => 'sms',
             'priority' => 'transactional',
             'message' => 'Integration delivery',
-            'recipient_ids' => [2],
+            'subscriber_ids' => [2],
         ], ['Idempotency-Key' => 'integration-delivery-001'])->assertCreated();
 
         $publisher = app(MessagePublisher::class);

@@ -18,7 +18,6 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        // В Symfony это обычно services.yaml/autowire; в Laravel биндинги интерфейсов живут в ServiceProvider.
         $this->app->singleton(FakeMessagePublisher::class);
         $this->app->singleton(MessagePublisher::class, function ($app): MessagePublisher {
             if ($app->environment('testing') || config('notifications.kafka.fake', false) || ! extension_loaded('rdkafka')) {
