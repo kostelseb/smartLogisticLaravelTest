@@ -1,0 +1,6 @@
+.git
+.idea
+bootstrap/cache/*.php
+node_modules
+storage/logs/*.log
+vendor

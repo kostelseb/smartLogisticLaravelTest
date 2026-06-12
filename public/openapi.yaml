@@ -1,0 +1,92 @@
+openapi: 3.0.3
+info:
+  title: Notification Service API
+  version: 1.0.0
+servers:
+  - url: http://localhost:8080/api
+paths:
+  /notification-batches:
+    post:
+      summary: Create notification batch
+      parameters:
+        - in: header
+          name: Idempotency-Key
+          required: true
+          schema:
+            type: string
+          example: critical-first-001
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateNotificationBatchRequest'
+            examples:
+              transactionalSms:
+                value:
+                  channel: sms
+                  priority: transactional
+                  message: "Критичное изменение маршрута"
+                  recipient_ids: [1]
+              marketingEmail:
+                value:
+                  channel: email
+                  priority: marketing
+                  message: "Маркетинговая рассылка"
+                  recipient_ids: [2, 3, 4, 5, 6, 7, 8, 9]
+      responses:
+        '201':
+          description: Batch accepted
+        '422':
+          description: Validation error
+  /notification-batches/{batch}:
+    get:
+      summary: Get notification batch status
+      description: Seeded demo batch UUID is 019eb82a-1605-7392-ba67-7287397244fa.
+      parameters:
+        - in: path
+          name: batch
+          required: true
+          schema:
+            type: string
+            format: uuid
+          example: 019eb82a-1605-7392-ba67-7287397244fa
+      responses:
+        '200':
+          description: Batch status
+        '404':
+          description: Batch not found
+  /subscribers/{subscriber}/notifications:
+    get:
+      summary: Get subscriber notification history
+      description: Seeded subscriber 1 has a demo delivered notification.
+      parameters:
+        - in: path
+          name: subscriber
+          required: true
+          schema:
+            type: integer
+          example: 1
+      responses:
+        '200':
+          description: Subscriber notification history
+        '404':
+          description: Subscriber not found
+components:
+  schemas:
+    CreateNotificationBatchRequest:
+      type: object
+      required: [channel, priority, message, recipient_ids]
+      properties:
+        channel:
+          type: string
+          enum: [sms, email]
+        priority:
+          type: string
+          enum: [transactional, marketing]
+        message:
+          type: string
+        recipient_ids:
+          type: array
+          items:
+            type: integer
