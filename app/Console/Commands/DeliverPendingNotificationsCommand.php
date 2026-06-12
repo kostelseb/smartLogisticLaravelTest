@@ -12,8 +12,6 @@ class DeliverPendingNotificationsCommand extends Command
 {
     protected $signature = 'notifications:drain-local';
 
-    protected $description = 'Deliver queued notifications from DB, transactional first. Useful for local tests without Kafka.';
-
     public function handle(NotificationDeliveryService $deliveryService): int
     {
         $this->drainByPriority(NotificationPriority::TRANSACTIONAL, $deliveryService);

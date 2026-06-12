@@ -12,12 +12,10 @@ class RunNotificationWorker extends Command
 {
     protected $signature = 'notifications:consume {priority : transactional or marketing} {--max-time=0}';
 
-    protected $description = 'Consume notification messages from a Kafka topic.';
-
     public function handle(NotificationDeliveryService $deliveryService): int
     {
         if (! extension_loaded('rdkafka')) {
-            $this->error('The rdkafka PHP extension is not installed. Run this command inside Docker, or use notifications:drain-local for local OSPanel checks.');
+            $this->error('The rdkafka PHP extension is not installed.');
 
             return self::FAILURE;
         }

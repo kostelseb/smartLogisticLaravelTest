@@ -49,40 +49,6 @@ Swagger UI:
 http://localhost:8080/docs
 ```
 
-### Создать batch
-
-```bash
-curl -X POST http://localhost:8080/api/notification-batches \
-  -H "Content-Type: application/json" \
-  -H "Idempotency-Key: critical-first-001" \
-  -d "{\"channel\":\"sms\",\"priority\":\"transactional\",\"message\":\"Критичное изменение маршрута\",\"subscriber_ids\":[1]}"
-```
-
-Повтор `POST /api/notification-batches` с тем же `Idempotency-Key` вернет тот же batch и не опубликует новые Kafka messages.
-
-### Получить batch
-
-```bash
-curl http://localhost:8080/api/notification-batches/019eb82a-1605-7392-ba67-7287397244fa
-```
-
-### Получить историю подписчика
-
-```bash
-curl http://localhost:8080/api/subscribers/1/notifications
-```
-
-### Маркетинговая рассылка
-
-```bash
-curl -X POST http://localhost:8080/api/notification-batches \
-  -H "Content-Type: application/json" \
-  -H "Idempotency-Key: marketing-001" \
-  -d "{\"channel\":\"email\",\"priority\":\"marketing\",\"message\":\"Маркетинговая рассылка\",\"subscriber_ids\":[2,3,4,5,6,7,8,9]}"
-```
-
-Подписчик `4` в этом сценарии перейдет в `dropped`, потому что fake provider вернет постоянную ошибку.
-
 ## Postman
 
 Готовая коллекция лежит в репозитории:
@@ -91,8 +57,6 @@ curl -X POST http://localhost:8080/api/notification-batches \
 postman/NotificationServiceRealTests.postman_collection.json
 ```
 
-Импорт в Postman: `Import -> Files`. В коллекции есть переменная `baseUrl` со значением `http://localhost:8080`.
-
 ## Тесты
 
 ```bash
@@ -100,19 +64,6 @@ php artisan test
 ```
 
 ## Полезные команды
-
-Локально обработать все queued notifications без Kafka, transactional first:
-
-```bash
-php artisan notifications:drain-local
-```
-
-Запустить consumer вручную внутри Docker:
-
-```bash
-docker compose exec app php artisan notifications:consume transactional
-docker compose exec app php artisan notifications:consume marketing
-```
 
 Сбросить БД в Docker:
 
