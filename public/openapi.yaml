@@ -27,13 +27,13 @@ paths:
                   channel: sms
                   priority: transactional
                   message: "Критичное изменение маршрута"
-                  recipient_ids: [1]
+                  subscriber_ids: [1]
               marketingEmail:
                 value:
                   channel: email
                   priority: marketing
                   message: "Маркетинговая рассылка"
-                  recipient_ids: [2, 3, 4, 5, 6, 7, 8, 9]
+                  subscriber_ids: [2, 3, 4, 5, 6, 7, 8, 9]
       responses:
         '201':
           description: Batch accepted
@@ -76,7 +76,7 @@ components:
   schemas:
     CreateNotificationBatchRequest:
       type: object
-      required: [channel, priority, message, recipient_ids]
+      required: [channel, priority, message, subscriber_ids]
       properties:
         channel:
           type: string
@@ -86,7 +86,7 @@ components:
           enum: [transactional, marketing]
         message:
           type: string
-        recipient_ids:
+        subscriber_ids:
           type: array
           items:
             type: integer

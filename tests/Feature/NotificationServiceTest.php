@@ -162,14 +162,14 @@ class NotificationServiceTest extends TestCase
             'subscriber_ids' => [1],
         ])->assertStatus(422)
             ->assertHeader('content-type', 'application/json')
-            ->assertJsonPath('errors.Idempotency-Key.0', 'Idempotency-Key header is required.');
+            ->assertJsonPath('errors.Idempotency-Key.0', 'Idempotency-Key header is required');
     }
 
     public function test_missing_subscriber(): void
     {
         $this->get('/api/subscribers/999/notifications')
             ->assertNotFound()
-            ->assertJsonPath('message', 'Resource not found.');
+            ->assertJsonPath('message', 'Not found.');
     }
 
     private function seedSubscribers(): void

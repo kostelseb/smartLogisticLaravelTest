@@ -30,9 +30,9 @@ class DatabaseSeeder extends Seeder
                     'email' => "subscriber{$i}@example.test",
                     'phone' => '+790000000' . str_pad((string) $i, 2, '0', STR_PAD_LEFT),
                     'provider_failure_mode' => match ($i) {
-                        4 => ProviderFailureMode::PERMANENT,
-                        5 => ProviderFailureMode::TEMPORARY_ONCE,
-                        default => ProviderFailureMode::NONE,
+                        4 => ProviderFailureMode::PERMANENT->value,
+                        5 => ProviderFailureMode::TEMPORARY_ONCE->value,
+                        default => ProviderFailureMode::NONE->value,
                     },
                 ]
             );
@@ -47,11 +47,11 @@ class DatabaseSeeder extends Seeder
         $batch->forceFill([
             'id' => '019eb82a-1605-7392-ba67-7287397244fa',
             'idempotency_key' => 'seeded-transactional-batch',
-            'channel' => NotificationChannel::SMS,
-            'priority' => NotificationPriority::TRANSACTIONAL,
+            'channel' => NotificationChannel::SMS->value,
+            'priority' => NotificationPriority::TRANSACTIONAL->value,
             'message' => 'Seeded transactional notification',
-            'queued_count' => 1,
-            'sent_count' => 1,
+            'queued_count' => 0,
+            'sent_count' => 0,
             'delivered_count' => 1,
             'dropped_count' => 0,
         ])->save();
@@ -63,9 +63,9 @@ class DatabaseSeeder extends Seeder
             'id' => '019eb82a-1605-7392-ba67-7287397244fb',
             'batch_id' => $batch->id,
             'subscriber_id' => 1,
-            'channel' => NotificationChannel::SMS,
-            'priority' => NotificationPriority::TRANSACTIONAL,
-            'status' => NotificationStatus::DELIVERED,
+            'channel' => NotificationChannel::SMS->value,
+            'priority' => NotificationPriority::TRANSACTIONAL->value,
+            'status' => NotificationStatus::DELIVERED->value,
             'deduplication_key' => "{$batch->id}:1",
             'sent_at' => now(),
             'delivered_at' => now(),
@@ -78,7 +78,7 @@ class DatabaseSeeder extends Seeder
             ],
             [
                 'provider' => 'fake-sms',
-                'status' => NotificationStatus::DELIVERED,
+                'status' => NotificationStatus::DELIVERED->value,
                 'error' => null,
             ]
         );
