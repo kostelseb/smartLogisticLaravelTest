@@ -54,12 +54,14 @@ readonly class NotificationBatchService
                     'deduplication_key' => "{$batch->id}:{$recipientId}",
                 ]);
 
-                // В Symfony похожее место часто живет в Messenger dispatch(); здесь producer обернут интерфейсом.
-                $this->publisher->publish($data->priority->topic(), $notification->id, [
-                    'notification_id' => $notification->id,
-                    'batch_id' => $batch->id,
-                    'priority' => $data->priority->value,
-                ]);
+                // Publish only after commit so the Kafka consumer can see the notification row in DB.
+                DB::afterCommit(function () use ($data, $batch, $notification): void {
+                    $this->publisher->publish($data->priority->topic(), $notification->id, [
+                        'notification_id' => $notification->id,
+                        'batch_id' => $batch->id,
+                        'priority' => $data->priority->value,
+                    ]);
+                });
             }
 
             return $batch->load('notifications');
