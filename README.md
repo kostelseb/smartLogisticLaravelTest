@@ -59,6 +59,14 @@ postman/NotificationServiceRealTests.postman_collection.json
 
 ## Тесты
 
+Если контейнеры уже подняты через Docker:
+
+```bash
+docker compose exec app php artisan test
+```
+
+Локально при установленном PHP:
+
 ```bash
 php artisan test
 ```
